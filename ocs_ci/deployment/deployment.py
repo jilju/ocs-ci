@@ -199,7 +199,7 @@ class Deployment(object):
             f"Distributed worker nodes for AZ: {distributed_worker_nodes}"
         )
         to_label = config.DEPLOYMENT.get('ocs_operator_nodes_to_label', 3)
-        to_taint = config.DEPLOYMENT.get('ocs_operator_nodes_to_taint', 3)
+        to_taint = 3
         worker_count = len(worker_nodes)
         if worker_count < to_label or worker_count < to_taint:
             logger.info(f"All nodes: {nodes}")
