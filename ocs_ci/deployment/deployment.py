@@ -446,23 +446,10 @@ class Deployment(object):
             if local_storage and platform == 'aws':
                 resources = {
                     'mds': {
-                        'limits': {'cpu': 3},
-                        'requests': {'cpu': 1}
-                    },
-                    'noobaa-core': {
-                        'limits': {'cpu': 2, 'memory': '8Gi'},
-                        'requests': {'cpu': 1, 'memory': '8Gi'}
-                    },
-                    'noobaa-db': {
-                        'limits': {'cpu': 2, 'memory': '8Gi'},
+                        'limits': {'cpu': 3, 'memory': '8Gi'},
                         'requests': {'cpu': 1, 'memory': '8Gi'}
                     }
                 }
-                if ocs_version >= 4.5:
-                    resources['noobaa-endpoint'] = {
-                        'limits': {'cpu': 2, 'memory': '8Gi'},
-                        'requests': {'cpu': 1, 'memory': '8Gi'}
-                    }
                 cluster_data['spec']['resources'] = resources
 
         # Enable host network if enabled in config (this require all the
