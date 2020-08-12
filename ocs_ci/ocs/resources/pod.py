@@ -1265,7 +1265,7 @@ def download_file_from_pod(pod_name, remotepath, localpath, namespace=None):
     run_cmd(cmd)
 
 
-def wait_for_storage_pods(timeout=200):
+def wait_for_storage_pods(timeout=1000):
     """
     Check all OCS pods status, they should be in Running or Completed state
 
