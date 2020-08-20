@@ -3,7 +3,7 @@ import pytest
 from concurrent.futures import ThreadPoolExecutor
 
 from ocs_ci.ocs import constants, node
-from ocs_ci.utility.utils import ceph_health_check
+from ocs_ci.utility.utils import ceph_health_check, TimeoutSampler
 from ocs_ci.helpers.helpers import wait_for_resource_state
 from ocs_ci.framework.testlib import (
     skipif_ocs_version,
@@ -92,10 +92,46 @@ class TestNodeRestartDuringPvcExpansion(ManageTest):
 
         # Verify pvc expansion status
         for pvc_obj in self.pvcs:
-            assert (
-                pvc_obj.expand_proc.result()
-            ), f"Expansion failed for PVC {pvc_obj.name}"
+            assert pvc_obj.expand_proc.result(), (
+                f"Expansion failed for PVC {pvc_obj.name}\nDescribe output "
+                f"of PVC and PV:\n{pvc_obj.describe()}\n"
+                f"{pvc_obj.backed_pv_obj.describe()}"
+            )
         log.info("PVC expansion was successful on all PVCs")
+
+        log.info("Verifying new size on pods.")
+        for pod_obj in self.pods:
+            if pod_obj.pvc.volume_mode == "Block":
+                log.info(f"Skipping check on pod {pod_obj.name} as volume mode is Block.")
+                continue
+
+            # Wait for 240 seconds to reflect the change on pod
+            log.info(f"Checking pod {pod_obj.name} to verify the change.")
+            for df_out in TimeoutSampler(
+                240, 3, pod_obj.exec_cmd_on_pod, command="df -kh"
+            ):
+                df_out = df_out.split()
+                new_size_mount = df_out[df_out.index(pod_obj.get_storage_path()) - 4]
+                if new_size_mount in [
+                    f"{pvc_size_expanded - 0.1}G",
+                    f"{float(pvc_size_expanded)}G",
+                    f"{pvc_size_expanded}G",
+                ]:
+                    log.info(
+                        f"Verified: Expanded size of PVC {pod_obj.pvc.name} "
+                        f"is reflected on pod {pod_obj.name}"
+                    )
+                    break
+                log.info(
+                    f"Expanded size of PVC {pod_obj.pvc.name} is not reflected"
+                    f" on pod {pod_obj.name}. New size on mount is not "
+                    f"{pvc_size_expanded}G as expected, but {new_size_mount}. "
+                    f"Checking again."
+                )
+        log.info(
+            f"Verified: Expanded size {pvc_size_expanded}G is reflected "
+            f"on all pods."
+        )
 
         # Run IO
         log.info("Run IO after PVC expansion.")
