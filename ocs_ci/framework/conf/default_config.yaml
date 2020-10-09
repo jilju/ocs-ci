@@ -59,7 +59,7 @@ DEPLOYMENT:
   ocs_operator_nodes_to_taint: 0
   ssh_key: "~/.ssh/openshift-dev.pub"
   ssh_key_private: "~/.ssh/openshift-dev.pem"
-  force_deploy_multiple_clusters: False
+  force_deploy_multiple_clusters: True
   allow_lower_instance_requirements: true
   # For manual subscription plan (for manual approve of upgrade set bellow)
   # subscription_plan_approval: "Manual"
