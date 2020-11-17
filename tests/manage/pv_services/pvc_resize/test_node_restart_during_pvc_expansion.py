@@ -102,7 +102,9 @@ class TestNodeRestartDuringPvcExpansion(ManageTest):
         log.info("Verifying new size on pods.")
         for pod_obj in self.pods:
             if pod_obj.pvc.volume_mode == "Block":
-                log.info(f"Skipping check on pod {pod_obj.name} as volume mode is Block.")
+                log.info(
+                    f"Skipping check on pod {pod_obj.name} as volume mode is Block."
+                )
                 continue
 
             # Wait for 240 seconds to reflect the change on pod
