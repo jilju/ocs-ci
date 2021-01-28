@@ -378,6 +378,7 @@ class VSPHEREUPI(VSPHEREBASE):
             super(VSPHEREUPI.OCPDeployment, self).deploy_prereq()
             # create ignitions
             self.create_ignitions()
+            self.create_manifests()
             self.kubeconfig = os.path.join(
                 self.cluster_path, config.RUN.get("kubeconfig_location")
             )
@@ -437,6 +438,43 @@ class VSPHEREUPI(VSPHEREBASE):
                 f"{self.installer} create ignition-configs "
                 f"--dir {self.cluster_path} "
             )
+
+        def create_manifests(self):
+            """
+            Creates the manifest files and change network mode
+            """
+            logger.info("creating manifest files for the cluster")
+            run_cmd(
+                f"{self.installer} create manifests "
+                f"--dir {self.cluster_path} "
+            )
+
+            # Create a file that is named cluster-network-03-config.yml
+            run_cmd(
+                f"touch {self.cluster_path}/manifests/cluster-network-03-config.yml"
+            )
+
+            run_cmd(
+                f"rm -f {self.cluster_path}/manifests/cluster-network-03-config.yml"
+            )
+
+            cluster_network_config_path = os.path.join(
+                constants.TEMPLATE_DIR, "ocp-deployment", "cluster-network-03-config.yml"
+            )
+
+            cluster_network_config_obj = yaml.safe_load(open(cluster_network_config_path))
+            network_config_str = yaml.safe_dump(cluster_network_config_obj)
+            network_config = os.path.join(self.cluster_path, "manifests/cluster-network-03-config.yml")
+            logger.info(f"Creating file {network_config}")
+            with open(network_config, "w") as f:
+                f.write(network_config_str)
+
+            # Delete unnecessary files
+            from pathlib import Path
+            for p in Path(os.path.join(self.cluster_path, "openshift")).glob("99_openshift-cluster-api_master-machines-*.yaml"):
+                p.unlink()
+            for p in Path(os.path.join(self.cluster_path, "openshift")).glob("99_openshift-cluster-api_worker-machineset-*.yaml"):
+                p.unlink()
 
         @retry(exceptions.CommandFailed, tries=10, delay=30, backoff=1)
         def configure_storage_for_image_registry(self, kubeconfig):
