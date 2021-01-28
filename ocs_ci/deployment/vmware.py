@@ -377,8 +377,8 @@ class VSPHEREUPI(VSPHEREBASE):
             """
             super(VSPHEREUPI.OCPDeployment, self).deploy_prereq()
             # create ignitions
-            self.create_ignitions()
             self.create_manifests()
+            self.create_ignitions()
             self.kubeconfig = os.path.join(
                 self.cluster_path, config.RUN.get("kubeconfig_location")
             )
