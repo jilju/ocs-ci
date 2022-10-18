@@ -1008,6 +1008,7 @@ def collect_ocs_logs(dir_name, ocp=True, ocs=True, mcg=False, status_failure=Tru
             allows better naming for folders under logs directory
 
     """
+    ocp = True
     if not (
         "KUBECONFIG" in os.environ
         or os.path.exists(os.path.expanduser("~/.kube/config"))
