@@ -51,7 +51,9 @@ def test_deployment(pvc_factory, pod_factory):
                         ocs_install_verification(ocs_registry_image=ocs_registry_image)
                     except Exception as exe:
                         log.warning(str(exe))
-                        log.warning("Verification failed. Please verify manually. Skipping rest of the verifications")
+                        log.warning(
+                            "Verification failed. Please verify manually. Skipping rest of the verifications"
+                        )
                         return
 
                 # Check basic cluster functionality by creating resources

@@ -110,13 +110,11 @@ def deploy_odf():
             helpers.create_resource(**icsp_data)
         except CommandFailed as exc:
             # To unblock the deployment if the creation of ImageContentSourcePolicy fails.
-            if "failed calling webhook" in str(exc):
-                logger.warning(
-                    "Creation of ImageContentSourcePolicy failed due to the error given below. Create it manually."
-                )
-                logger.warning(str(exc))
-            else:
-                raise
+            logger.warning(
+                "Creation of ImageContentSourcePolicy failed due to the error given below. "
+                "Some of the csi pods may not be in Running state. Fix it manually."
+            )
+            logger.warning(str(exc))
 
         onboarding_ticket = config.DEPLOYMENT.get("onboarding_ticket", "")
         if not onboarding_ticket:
