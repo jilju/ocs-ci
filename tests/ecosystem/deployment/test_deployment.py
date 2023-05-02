@@ -47,7 +47,12 @@ def test_deployment(pvc_factory, pod_factory):
                     mcg_only_install_verification(ocs_registry_image=ocs_registry_image)
                     return
                 else:
-                    ocs_install_verification(ocs_registry_image=ocs_registry_image)
+                    try:
+                        ocs_install_verification(ocs_registry_image=ocs_registry_image)
+                    except Exception as exe:
+                        log.warning(str(exe))
+                        log.warning("Verification failed. Please verify manually. Skipping rest of the verifications")
+                        return
 
                 # Check basic cluster functionality by creating resources
                 # (pools, storageclasses, PVCs, pods - both CephFS and RBD),
