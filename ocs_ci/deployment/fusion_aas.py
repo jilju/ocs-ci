@@ -113,9 +113,9 @@ class FUSIONAAS(rosa_deployment.ROSA):
         except (IndexError, CommandFailed):
             logger.info("Running OCS basic installation")
         if config.DEPLOYMENT.get("pullsecret_workaround"):
-            update_pull_secret()
             # Pull secret won't be applied to all nodes if any node is in SchedulingDisabled state.
-            wait_for_nodes_status(status=constants.NODE_READY, timeout=600)
+            wait_for_nodes_status(status=constants.NODE_READY, timeout=1200)
+            update_pull_secret()
 
         create_fusion_monitoring_resources()
 
