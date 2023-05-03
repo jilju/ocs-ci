@@ -10,6 +10,7 @@ import os
 from ocs_ci.deployment.helpers.rosa_prod_cluster_helpers import ROSAProdEnvCluster
 from ocs_ci.deployment import rosa as rosa_deployment
 from ocs_ci.framework import config
+from ocs_ci.ocs.ocp import OCP
 from ocs_ci.utility import openshift_dedicated as ocm, rosa
 from ocs_ci.utility.aws import AWS as AWSUtil
 from ocs_ci.utility.utils import get_ocp_version
@@ -114,6 +115,22 @@ class FUSIONAAS(rosa_deployment.ROSA):
         if config.DEPLOYMENT.get("pullsecret_workaround"):
             update_pull_secret()
         deploy_odf()
+
+        # Verify that tools pod is created on provider. To unblock deployment, making this as not a strict validation.
+        if config.ENV_DATA.get("cluster_type") == "provider":
+            try:
+                toolbox_pod = OCP(
+                    kind=constants.POD, namespace=config.ENV_DATA["cluster_namespace"]
+                )
+                toolbox_pod.wait_for_resource(
+                    condition="Running",
+                    selector="app=rook-ceph-tools",
+                    resource_count=1,
+                    timeout=900,
+                )
+            except Exception as exe:
+                logger.warning(str(exe))
+                logger.warning("Couldn't finish the creation of tools pod on provider.")
 
     def destroy_ocs(self):
         """

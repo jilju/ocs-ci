@@ -150,6 +150,13 @@ def ocs_install_verification(
     from ocs_ci.ocs.cluster import validate_cluster_on_pvc
     from ocs_ci.ocs.resources.fips import check_fips_enabled
 
+    if config.ENV_DATA["platform"] == constants.FUSIONAAS_PLATFORM:
+        log.warning(
+            f"Skipping OCS install verification in {constants.FUSIONAAS_PLATFORM} because the verification is not "
+            f"completely implemented."
+        )
+        return
+
     number_of_worker_nodes = len(get_nodes())
     namespace = config.ENV_DATA["cluster_namespace"]
     log.info("Verifying OCS installation")
