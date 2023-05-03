@@ -10,6 +10,7 @@ import os
 from ocs_ci.deployment.helpers.rosa_prod_cluster_helpers import ROSAProdEnvCluster
 from ocs_ci.deployment import rosa as rosa_deployment
 from ocs_ci.framework import config
+from ocs_ci.ocs.node import wait_for_nodes_status
 from ocs_ci.ocs.ocp import OCP
 from ocs_ci.utility import openshift_dedicated as ocm, rosa
 from ocs_ci.utility.aws import AWS as AWSUtil
@@ -111,9 +112,13 @@ class FUSIONAAS(rosa_deployment.ROSA):
             return
         except (IndexError, CommandFailed):
             logger.info("Running OCS basic installation")
-        create_fusion_monitoring_resources()
         if config.DEPLOYMENT.get("pullsecret_workaround"):
             update_pull_secret()
+            # Pull secret won't be applied to all nodes if any node is in SchedulingDisabled state.
+            wait_for_nodes_status(status=constants.NODE_READY, timeout=600)
+
+        create_fusion_monitoring_resources()
+
         deploy_odf()
 
         # Verify that tools pod is created on provider. To unblock deployment, making this as not a strict validation.
