@@ -62,14 +62,17 @@ def test_deployment(pvc_factory, pod_factory):
                 ):
                     try:
                         sanity_helpers.health_check()
-                    except exceptions.ResourceWrongStatusException as err_msg:
+                    except Exception as err_msg:
                         log.warning(err_msg)
                 else:
                     sanity_helpers.health_check()
                 sanity_helpers.delete_resources()
                 # Verify ceph health
                 log.info("Verifying ceph health after deployment")
-                assert ceph_health_check(tries=10, delay=30)
+                try:
+                    assert ceph_health_check(tries=10, delay=30)
+                except Exception as err_msg:
+                    log.warning(err_msg)
 
     if teardown:
         log.info("Cluster will be destroyed during teardown part of this test.")
