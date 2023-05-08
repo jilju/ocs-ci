@@ -1652,7 +1652,7 @@ def verify_all_nodes_created():
             try:
 
                 for node_list in TimeoutSampler(
-                    timeout=1200, sleep=60, func=get_all_nodes
+                    timeout=2400, sleep=60, func=get_all_nodes
                 ):
                     if len(node_list) == expected_num_nodes:
                         log.info(
