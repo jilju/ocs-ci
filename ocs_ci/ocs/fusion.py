@@ -74,7 +74,7 @@ def deploy_odf():
     # TODO: Remove this workaround when the build is fixed.
     # Temporary workaround to create storageclassclaim CRD.
     storageclassclaim_crd = (
-        "https://raw.githubusercontent.com/red-hat-storage/ocs-client-operator/release-4.12/config/crd/"
+        f"https://raw.githubusercontent.com/red-hat-storage/ocs-client-operator/release-{config.ENV_DATA['ocs_version']}/config/crd/"
         "bases/ocs.openshift.io_storageclassclaims.yaml"
     )
     exec_cmd(f"oc create -f {storageclassclaim_crd}")
