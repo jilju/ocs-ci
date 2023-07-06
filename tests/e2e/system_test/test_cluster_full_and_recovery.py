@@ -127,7 +127,7 @@ class TestClusterFullAndRecovery(E2ETest):
         log.info(
             "Fill the cluster to “Full ratio” (usually 85%) with benchmark-operator"
         )
-        size = get_file_size(65)
+        size = get_file_size(75)
         self.benchmark_obj = BenchmarkOperatorFIO()
         self.benchmark_obj.setup_benchmark_fio(total_size=size)
         self.benchmark_obj.run_fio_benchmark_operator(is_completed=False)
