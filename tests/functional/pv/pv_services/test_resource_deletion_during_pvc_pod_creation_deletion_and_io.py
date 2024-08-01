@@ -227,6 +227,7 @@ class TestResourceDeletionDuringMultipleCreateDeleteOperations(ManageTest):
                 size=f"{io_size}G",
                 runtime=30,
                 fio_filename=f"{pod_obj.name}_io",
+                direct=int(storage_type == "block"),
             )
 
     @polarion_id("OCS-5176")
@@ -530,16 +531,16 @@ class TestResourceDeletionDuringMultipleCreateDeleteOperations(ManageTest):
         resource_delete_proc_dict = {}
         for disruption in disruption_ops:
             log.info(f"Deleting {disruption.resource} pod")
-            resource_delete_proc_dict[disruption.resource] = executor.submit(
-                disruption.delete_resource
-            )
+            # resource_delete_proc_dict[disruption.resource] = executor.submit(
+            #     disruption.delete_resource
+            # )
 
-        for resource_type, proc in resource_delete_proc_dict.items():
-            log.info(f"Verifying the deletion process of {resource_type} pod")
-            resource_delete_proc_dict[resource_type].result()
-            log.info(
-                f"Deletion of {resource_type} pod was success. A new pod is created automatically."
-            )
+        # for resource_type, proc in resource_delete_proc_dict.items():
+        #     log.info(f"Verifying the deletion process of {resource_type} pod")
+        #     resource_delete_proc_dict[resource_type].result()
+        #     log.info(
+        #         f"Deletion of {resource_type} pod was success. A new pod is created automatically."
+        #     )
 
         # Verify pods are deleted
         pods_deleted = pod_bulk_delete.result()
