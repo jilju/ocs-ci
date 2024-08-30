@@ -393,7 +393,7 @@ CONSOLE_CONFIG = "console.v1.operator.openshift.io/cluster"
 DEFAULT_CEPHBLOCKPOOL = "ocs-storagecluster-cephblockpool"
 # Default StorageClass
 DEFAULT_STORAGECLASS_CEPHFS = f"{DEFAULT_CLUSTERNAME}-cephfs"
-DEFAULT_STORAGECLASS_RBD = f"{DEFAULT_CLUSTERNAME}-ceph-rbd"
+DEFAULT_STORAGECLASS_RBD = "ocs-storagecluster-ceph-rbd-1"
 DEFAULT_STORAGECLASS_RGW = f"{DEFAULT_CLUSTERNAME}-ceph-rgw"
 DEFAULT_STORAGECLASS_RBD_THICK = f"{DEFAULT_CLUSTERNAME}-ceph-rbd-thick"
 DEFAULT_OCS_STORAGECLASS = "default-ocs-storage-class"
