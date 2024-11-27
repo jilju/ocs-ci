@@ -297,11 +297,15 @@ def check_mirroring_status_ok(replaying_images=None):
         bool: True if status contains expected health and states values, False otherwise
 
     """
-    cbp_obj = ocp.OCP(
-        kind=constants.CEPHBLOCKPOOL,
-        resource_name=constants.DEFAULT_CEPHBLOCKPOOL,
-        namespace=config.ENV_DATA["cluster_namespace"],
-    )
+    if config.ENV_DATA.get("odf_provider_mode_deployment", False):
+        cbprns_obj = ocp.OCP(kind=constants.CEPHBLOCKPOOLRADOSNS, namespace=config.ENV_DATA["cluster_namespace"])
+        cbp_obj = ocp.OCP(**cbprns_obj.get()["items"][0])
+    else:
+        cbp_obj = ocp.OCP(
+            kind=constants.CEPHBLOCKPOOL,
+            resource_name=constants.DEFAULT_CEPHBLOCKPOOL,
+            namespace=config.ENV_DATA["cluster_namespace"],
+        )
     mirroring_status = cbp_obj.get().get("status").get("mirroringStatus").get("summary")
     logger.info(f"Mirroring status: {mirroring_status}")
     health_keys = ["daemon_health", "health", "image_health"]
@@ -335,7 +339,7 @@ def check_mirroring_status_ok(replaying_images=None):
     return True
 
 
-def wait_for_mirroring_status_ok(replaying_images=None, timeout=300):
+def wait_for_mirroring_status_ok(replaying_images=None, timeout=900):
     """
     Wait for mirroring status to reach health OK and expected number of replaying
     images for each of the ODF cluster
