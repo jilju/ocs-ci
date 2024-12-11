@@ -298,8 +298,13 @@ def check_mirroring_status_ok(replaying_images=None):
 
     """
     if config.ENV_DATA.get("odf_provider_mode_deployment", False):
-        cbprns_obj = ocp.OCP(kind=constants.CEPHBLOCKPOOLRADOSNS, namespace=config.ENV_DATA["cluster_namespace"])
-        cbp_obj = ocp.OCP(**cbprns_obj.get()["items"][0])
+        cephbpradosns = config.ENV_DATA.get("radosnamespace_name")
+        cbprns_obj = ocp.OCP(
+            kind=constants.CEPHBLOCKPOOLRADOSNS,
+            namespace=config.ENV_DATA["cluster_namespace"],
+            resource_name=cephbpradosns,
+        )
+        cbp_obj = ocp.OCP(**cbprns_obj.get())
     else:
         cbp_obj = ocp.OCP(
             kind=constants.CEPHBLOCKPOOL,
@@ -339,7 +344,7 @@ def check_mirroring_status_ok(replaying_images=None):
     return True
 
 
-def wait_for_mirroring_status_ok(replaying_images=None, timeout=900):
+def wait_for_mirroring_status_ok(replaying_images=None, timeout=1800):
     """
     Wait for mirroring status to reach health OK and expected number of replaying
     images for each of the ODF cluster
@@ -910,11 +915,17 @@ def verify_backend_volume_deletion(backend_volumes):
         if config.DEPLOYMENT["external_mode"]
         else constants.DEFAULT_CEPHBLOCKPOOL
     )
-    rbd_images = ct_pod.exec_cmd_on_pod(f"rbd ls {rbd_pool_name} --format json")
+    if config.ENV_DATA.get("odf_provider_mode_deployment", False):
+        cephbpradosns = config.ENV_DATA.get("radosnamespace_name")
+        namespace_param = f"--namespace {cephbpradosns}"
+    else:
+        namespace_param = ""
+    rbd_images = ct_pod.exec_cmd_on_pod(f"rbd ls {rbd_pool_name} {namespace_param} --format json")
 
     fs_name = ct_pod.exec_ceph_cmd("ceph fs ls")[0]["name"]
+    subvolumegroup = config.ENV_DATA.get("subvolumegroup_name") or "csi"
     cephfs_cmd_output = ct_pod.exec_cmd_on_pod(
-        f"ceph fs subvolume ls {fs_name} --group_name csi"
+        f"ceph fs subvolume ls {fs_name} --group_name {subvolumegroup}"
     )
     cephfs_subvolumes = [subvolume["name"] for subvolume in cephfs_cmd_output]
 
