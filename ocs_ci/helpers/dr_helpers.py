@@ -299,12 +299,11 @@ def check_mirroring_status_ok(replaying_images=None):
     """
     if config.ENV_DATA.get("odf_provider_mode_deployment", False):
         cephbpradosns = config.ENV_DATA.get("radosnamespace_name")
-        cbprns_obj = ocp.OCP(
+        cbp_obj = ocp.OCP(
             kind=constants.CEPHBLOCKPOOLRADOSNS,
             namespace=config.ENV_DATA["cluster_namespace"],
             resource_name=cephbpradosns,
         )
-        cbp_obj = ocp.OCP(**cbprns_obj.get())
     else:
         cbp_obj = ocp.OCP(
             kind=constants.CEPHBLOCKPOOL,
@@ -344,7 +343,7 @@ def check_mirroring_status_ok(replaying_images=None):
     return True
 
 
-def wait_for_mirroring_status_ok(replaying_images=None, timeout=1800):
+def wait_for_mirroring_status_ok(replaying_images=None, timeout=900):
     """
     Wait for mirroring status to reach health OK and expected number of replaying
     images for each of the ODF cluster
