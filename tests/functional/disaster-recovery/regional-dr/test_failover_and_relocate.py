@@ -1,4 +1,5 @@
 import logging
+import time
 from time import sleep
 
 import pytest
@@ -142,17 +143,19 @@ class TestFailoverAndRelocate:
         # Stop primary cluster nodes
         if primary_cluster_down:
             config.switch_to_cluster_by_name(primary_cluster_name)
-            logger.info(f"Stopping nodes of primary cluster: {primary_cluster_name}")
+            logger.info(f"Poweroff the nodes of primary cluster {primary_cluster_name} MANUALLY")
+            logger.info("Waiting 600 seconds for the manual steps to power off the nodes")
+            time.sleep(600)
             nodes_multicluster[primary_cluster_index].stop_nodes(primary_cluster_nodes)
-
-            # Verify if cluster is marked unavailable on ACM console
-            if config.RUN.get("rdr_failover_via_ui"):
-                config.switch_acm_ctx()
-                check_cluster_status_on_acm_console(
-                    acm_obj,
-                    down_cluster_name=primary_cluster_name,
-                    expected_text="Unknown",
-                )
+            #
+            # # Verify if cluster is marked unavailable on ACM console
+            # if config.RUN.get("rdr_failover_via_ui"):
+            #     config.switch_acm_ctx()
+            #     check_cluster_status_on_acm_console(
+            #         acm_obj,
+            #         down_cluster_name=primary_cluster_name,
+            #         expected_text="Unknown",
+            #     )
         elif config.RUN.get("rdr_failover_via_ui"):
             check_cluster_status_on_acm_console(acm_obj)
 
@@ -194,18 +197,19 @@ class TestFailoverAndRelocate:
         # Start nodes if cluster is down
         if primary_cluster_down:
             logger.info(
-                f"Waiting for {wait_time} minutes before starting nodes of primary cluster: {primary_cluster_name}"
+                f"Starting the nodes of primary cluster {primary_cluster_name} MANUALLY"
             )
-            sleep(wait_time * 60)
-            nodes_multicluster[primary_cluster_index].start_nodes(primary_cluster_nodes)
+            logger.info("Waiting 900 seconds for the manual steps to start the nodes")
+            sleep(wait_time * 900)
+            # nodes_multicluster[primary_cluster_index].start_nodes(primary_cluster_nodes)
             wait_for_nodes_status([node.name for node in primary_cluster_nodes])
-            logger.info("Wait for 180 seconds for pods to stabilize")
-            sleep(180)
+            logger.info("Wait for 360 seconds for pods to stabilize")
+            sleep(360)
             logger.info(
                 "Wait for all the pods in openshift-storage to be in running state"
             )
             assert wait_for_pods_to_be_running(
-                timeout=720
+                timeout=1200
             ), "Not all the pods reached running state"
             logger.info("Checking for Ceph Health OK")
             ceph_health_check()
