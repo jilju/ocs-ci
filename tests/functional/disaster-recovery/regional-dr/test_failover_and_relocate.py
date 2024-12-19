@@ -146,7 +146,7 @@ class TestFailoverAndRelocate:
             logger.info(f"Poweroff the nodes of primary cluster {primary_cluster_name} MANUALLY")
             logger.info("Waiting 600 seconds for the manual steps to power off the nodes")
             time.sleep(600)
-            nodes_multicluster[primary_cluster_index].stop_nodes(primary_cluster_nodes)
+            # nodes_multicluster[primary_cluster_index].stop_nodes(primary_cluster_nodes)
             #
             # # Verify if cluster is marked unavailable on ACM console
             # if config.RUN.get("rdr_failover_via_ui"):
