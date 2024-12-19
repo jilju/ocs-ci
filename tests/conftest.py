@@ -3982,6 +3982,8 @@ def node_restart_teardown(request, nodes_multicluster, nodes):
         cluster_node_objs.append(get_node_objs())
 
     def finalizer():
+        log.warning("Skipping node restart at teardown for RDR provider mode")
+        return
         for index in range(ocsci_config.nclusters):
             ocsci_config.switch_ctx(index)
             # Start the powered off nodes
