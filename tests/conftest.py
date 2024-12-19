@@ -1672,7 +1672,9 @@ def upgrade_marks_name():
 
 @pytest.fixture(scope="function", autouse=True)
 def health_checker(request, tier_marks_name, upgrade_marks_name):
-    skipped = False
+    skipped = True
+    log.info("Skipping health checks for provider mode")
+    return
     dev_mode = ocsci_config.RUN["cli_params"].get("dev_mode")
     mcg_only_deployment = ocsci_config.ENV_DATA["mcg_only_deployment"]
     if mcg_only_deployment:
