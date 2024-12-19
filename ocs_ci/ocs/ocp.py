@@ -1093,7 +1093,8 @@ class OCP(object):
             return False
         try:
             if self.kind == constants.APPLICATION_ARGOCD:
-                current_phase = data["status"]["operationState"]["phase"]
+                phase = "Healthy"
+                current_phase = data["status"]["health"]["status"]
             else:
                 current_phase = data["status"]["phase"]
             log.info(f"Resource {self.resource_name} is in phase: {current_phase}!")
