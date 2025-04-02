@@ -59,7 +59,7 @@ class TestCnvApplicationRDR:
 
         # Create CNV applications (Subscription and ApplicationSet)
         cnv_workloads = cnv_dr_workload(
-            num_of_vm_subscription=1, num_of_vm_appset_push=1, num_of_vm_appset_pull=1
+            num_of_vm_subscription=1, num_of_vm_appset_push=0, num_of_vm_appset_pull=1
         )
         wl_namespace = cnv_workloads[0].workload_namespace
 
