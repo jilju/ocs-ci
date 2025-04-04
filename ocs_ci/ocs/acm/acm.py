@@ -338,7 +338,7 @@ class AcmAddClusters(AcmPageNavigator):
             raise NoSuchElementException
         log.info("Click on the cluster set created")
         self.do_click(
-            format_locator(self.page_nav["cluster-set-selection"], cluster_set_name)
+            format_locator(self.page_nav["cluster-set-selection"], "submariner")
         )
         log.info("Click on 'Submariner add-ons' tab")
         self.do_click(self.page_nav["submariner-tab"], enable_screenshot=True)
