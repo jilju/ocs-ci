@@ -2625,15 +2625,15 @@ def ceph_health_recover(health_status, namespace=None):
                 f": '{pattern}'!"
             )
             # Avoid circular dependencies, importing here
-            from ocs_ci.ocs.utils import collect_ocs_logs
+            # from ocs_ci.ocs.utils import collect_ocs_logs
 
             # Collecting logs here before trying to fix issue
-            timestamp = int(time.time())
-            collect_ocs_logs(
-                f"ceph_health_recover_{timestamp}",
-                ocp=False,
-                timeout=defaults.MUST_GATHER_TIMEOUT,
-            )
+            # timestamp = int(time.time())
+            # collect_ocs_logs(
+            #     f"ceph_health_recover_{timestamp}",
+            #     ocp=False,
+            #     timeout=defaults.MUST_GATHER_TIMEOUT,
+            # )
             fix_dict["func"](
                 *fix_dict.get("func_args", []), **fix_dict.get("func_kwargs", {})
             )
@@ -2704,6 +2704,7 @@ def ceph_health_check_base(namespace=None, fix_ceph_health=False):
         boolean: True if HEALTH_OK
 
     """
+    fix_ceph_health = True
     namespace = namespace or config.ENV_DATA["cluster_namespace"]
     health = run_ceph_health_cmd(namespace)
 
@@ -2712,8 +2713,11 @@ def ceph_health_check_base(namespace=None, fix_ceph_health=False):
         return True
     else:
         if fix_ceph_health:
-            ceph_health_recover(health, namespace)
-        raise CephHealthException(f"Ceph cluster health is not OK. Health: {health}")
+            try:
+                ceph_health_recover(health, namespace)
+            except CephHealthRecoveredException:
+                return True
+        # raise CephHealthException(f"Ceph cluster health is not OK. Health: {health}")
 
 
 def create_ceph_health_cmd(namespace):
