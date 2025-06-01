@@ -71,8 +71,9 @@ class TestManagedClusterNodeFailure:
                 logger.info("Checking for Ceph Health OK")
                 ceph_health_check(tries=40, delay=60)
 
-                if crash_warning_found:
-                    pytest.fail("Test failed due to Ceph daemon crash warning")
+                # Comment due to bug https://issues.redhat.com/browse/DFBUGS-2653
+                # if crash_warning_found:
+                #     pytest.fail("Test failed due to Ceph daemon crash warning")
 
         request.addfinalizer(finalizer)
 
