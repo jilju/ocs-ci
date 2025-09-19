@@ -70,7 +70,7 @@ from ocs_ci.utility.utils import (
     run_cmd,
     get_module_ip,
     get_terraform_ignition_provider,
-    get_client_type_by_name,
+    # get_client_type_by_name,
 )
 from ocs_ci.ocs.node import (
     wait_for_nodes_status,
@@ -114,7 +114,7 @@ class PlatformNodesFactory:
         }
 
     def get_nodes_platform(self):
-        cluster_name = config.ENV_DATA.get("cluster_name")
+        # cluster_name = config.ENV_DATA.get("cluster_name")
         platform = config.ENV_DATA["platform"]
         if platform == constants.VSPHERE_PLATFORM:
             deployment_type = config.ENV_DATA["deployment_type"]
@@ -122,12 +122,12 @@ class PlatformNodesFactory:
                 platform += "_lso"
             elif deployment_type in ("ipi", "upi"):
                 platform += f"_{deployment_type}"
-        elif (
-            config.hci_client_exist()
-            and get_client_type_by_name(cluster_name)
-            == constants.HOSTED_CLUSTER_KUBEVIRT
-        ):
-            platform = "kubevirt_vm"
+        # elif (
+        #     config.hci_client_exist()
+        #     and get_client_type_by_name(cluster_name)
+        #     == constants.HOSTED_CLUSTER_KUBEVIRT
+        # ):
+        #     platform = "kubevirt_vm"
 
         if config.ENV_DATA["platform"] == constants.ROSA_HCP_PLATFORM:
             if config.ENV_DATA["deployment_type"] == "managed_cp":

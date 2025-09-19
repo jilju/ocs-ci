@@ -4958,7 +4958,6 @@ def get_client_type_by_name(cluster_name):
         str: The client type in lowercase(e.g. kubevirt, agent, non_hosted, etc.,)
 
     """
-    return "kubevirt"
     from ocs_ci.deployment.helpers.hypershift_base import (
         is_hosted_cluster,
         get_hosted_cluster_type,
