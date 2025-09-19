@@ -375,9 +375,9 @@ def check_mirroring_status_ok(
     """
     if is_hci_cluster():
         logger.error(
-            "Skipping mirroring status check for HCI client. Sleeping 6 minutes for status okay"
+            "Skipping mirroring status check for HCI client. Sleeping 10 minutes for status okay"
         )
-        time.sleep(360)
+        time.sleep(600)
         return True
     ocs_version = version.get_semantic_ocs_version_from_config()
     if is_hci_cluster():
