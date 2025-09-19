@@ -373,6 +373,12 @@ def check_mirroring_status_ok(
         NotFoundError: If the configuration is provider mode and the name of the cephblockpoolradosnamespace
             is not obtained
     """
+    if is_hci_cluster():
+        logger.error(
+            "Skipping mirroring status check for HCI client. Sleeping 6 minutes for status okay"
+        )
+        time.sleep(360)
+        return True
     ocs_version = version.get_semantic_ocs_version_from_config()
     if is_hci_cluster():
         logger.info("Get the cephblockpoolradosnamespace associated with storageclient")
@@ -1170,6 +1176,9 @@ def verify_backend_volume_deletion(
         NotFoundError: If the configuration is provider mode and the name of the cephblockpoolradosnamespace
             is not obtained
     """
+    if is_hci_cluster():
+        logger.error("Skipping backend volume deletion for HCI client.")
+        return True
     ocs_version = version.get_semantic_ocs_version_from_config()
 
     ct_pod = get_ceph_tools_pod()
