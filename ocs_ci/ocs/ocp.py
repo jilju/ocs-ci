@@ -94,12 +94,13 @@ class OCP(object):
             and "hci_" in config.ENV_DATA["platform"]
             and kind.lower() in constants.PROVIDER_CLUSTER_RESOURCE_KINDS
         ):
-            provider_cluster_index = config.get_provider_index()
-            provider_kubeconfig_path = os.path.join(
-                config.clusters[provider_cluster_index].ENV_DATA["cluster_path"],
-                config.clusters[provider_cluster_index].RUN.get("kubeconfig_location"),
-            )
-            self.cluster_kubeconfig = provider_kubeconfig_path
+            self.cluster_kubeconfig = cluster_kubeconfig
+            # provider_cluster_index = config.get_provider_index()
+            # provider_kubeconfig_path = os.path.join(
+            #     config.clusters[provider_cluster_index].ENV_DATA["cluster_path"],
+            #     config.clusters[provider_cluster_index].RUN.get("kubeconfig_location"),
+            # )
+            # self.cluster_kubeconfig = provider_kubeconfig_path
             # TODO : self.cluster_context = provider_cluster_index, remove cluster_kubeconfig check in if condition
         else:
             self.cluster_kubeconfig = cluster_kubeconfig
