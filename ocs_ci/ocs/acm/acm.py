@@ -1048,7 +1048,7 @@ def install_clusteradm():
         exec_cmd(
             "bash -c 'curl -L https://raw.githubusercontent.com/open-cluster-management-io/clusteradm/main/install.sh "
             "| bash'",
-            shell=True
+            shell=True,
         )
 
 
