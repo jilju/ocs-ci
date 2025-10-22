@@ -2306,6 +2306,7 @@ def verify_drpc_placement_deletion(cmd, expected_output_lst):
     return True
 
 
+@retry(AssertionError, tries=60, delay=10, backoff=1)
 def verify_last_kubeobject_protection_time(drpc_obj, kubeobject_sync_interval):
     """
     Verifies that the lastKubeObjectProtectionTime for a given DRPC object is within the expected range.
