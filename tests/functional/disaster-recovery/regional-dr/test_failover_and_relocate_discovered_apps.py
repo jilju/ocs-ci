@@ -82,7 +82,7 @@ class TestFailoverAndRelocateWithDiscoveredApps:
             pytest.param(
                 True,
                 constants.CEPHFILESYSTEM,
-                1,
+                0,
                 1,
                 1,
                 marks=[skipif_ocs_version("<4.19"), tier4],
