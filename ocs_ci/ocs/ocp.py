@@ -188,6 +188,7 @@ class OCP(object):
             != self.cluster_context
         ):
             original_context = config.cluster_ctx.MULTICLUSTER.get("multicluster_index")
+            log.info(f"Switching to context {config.get_cluster_name_by_index(self.cluster_context)}. Original context: {config.get_cluster_name_by_index(original_context)}")
             config.switch_ctx(self.cluster_context)
 
         oc_cmd = "oc "
@@ -232,6 +233,7 @@ class OCP(object):
             pass
 
         if original_context:
+            log.info(f"Switching to original context: {config.get_cluster_name_by_index(original_context)}")
             config.switch_ctx(original_context)
 
         if out_yaml_format:
