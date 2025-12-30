@@ -462,4 +462,4 @@ class Submariner(object):
 
         """
         # Always return the first worker node
-        return get_typed_worker_nodes()[0]
+        return get_typed_worker_nodes(os_id="rhel")[0]
