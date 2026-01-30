@@ -1406,6 +1406,7 @@ def get_all_drpolicy():
                 cluster_name.ENV_DATA.get("cluster_name")
             )
     dr_cluster_relations = config.MULTICLUSTER.get("dr_cluster_relations", [])
+    logger.info(f"dr_cluster_relations = {dr_cluster_relations}")
     if dr_cluster_relations:
         current_managed_clusters_list = [
             f"{constants.HYPERSHIFT_ADDON_DISCOVERYPREFIX}-{item}"
