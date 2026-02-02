@@ -2586,6 +2586,10 @@ class AZURENodes(NodesBase):
         Make sure all VM instances up by the end of the test
 
         """
+        if config.ENV_DATA["deployment_type"] != "ipi":
+            logger.info("Skipping node check at teardown for Azure non-IPI")
+            return
+
         self.cluster_nodes = get_node_objs()
         vms = self.azure.get_vm_names()
         assert (
