@@ -3,7 +3,7 @@
 
 import logging
 
-from ocs_ci.deployment.azure import AZUREIPI
+from ocs_ci.deployment.azure import AZUREIPI, AZUREAroManaged
 from ocs_ci.framework import config
 from ocs_ci.framework.testlib import libtest
 from ocs_ci.ocs import constants
@@ -30,7 +30,33 @@ def test_azure_cluster_resource_group_loading():
     group, and that it's value is not None.
     """
     azure_depl = AZUREIPI()
+    logger.info(
+        f"Cluster resource group is {azure_depl.azure_util.cluster_resource_group}"
+    )
     assert azure_depl.azure_util.cluster_resource_group is not None
+
+
+@libtest
+@azure_platform_required
+def test_aro_cluster_resource_group_loading():
+    """
+    Check that no exception is raised during loading of Azure cluster resource
+    group, and that it's value is not None.
+    """
+    azure_depl = AZUREAroManaged()
+    logger.info(
+        f"Cluster resource group is {azure_depl.azure_util.cluster_resource_group}"
+    )
+    assert azure_depl.azure_util.cluster_resource_group is not None
+
+
+def test_restart_nodes_by_stop_and_start_teardown(request, nodes):
+    """
+    Make sure the nodes are up
+
+    """
+
+    nodes.restart_nodes_by_stop_and_start_teardown()
 
 
 @libtest
