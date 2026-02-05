@@ -14,6 +14,7 @@ import yaml
 from subprocess import TimeoutExpired
 from semantic_version import Version
 
+from ocs_ci.helpers.helpers import check_cluster_is_compact
 from ocs_ci.ocs.machine import get_machine_objs
 
 from ocs_ci.framework import config
@@ -1357,12 +1358,11 @@ def get_worker_nodes(skip_master_nodes=None):
             if node.get("metadata").get("name") not in infra_node_ids
         ]
     worker_nodes_list = [node.get("metadata").get("name") for node in nodes]
-
     # Determine whether to skip master nodes
     should_skip_masters = skip_master_nodes
     if should_skip_masters is None:
         # Auto-detect: skip masters only for HCI provider clusters
-        should_skip_masters = is_hci_provider_cluster()
+        should_skip_masters = is_hci_provider_cluster() and not check_cluster_is_compact()
 
     if should_skip_masters:
         master_node_list = get_master_nodes()
