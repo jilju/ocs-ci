@@ -33,7 +33,6 @@ from ocs_ci.utility.utils import TimeoutSampler, convert_device_size, get_az_cou
 from ocs_ci.ocs import machine
 from ocs_ci.ocs.resources import pod
 from ocs_ci.utility.utils import set_selinux_permissions, get_ocp_version
-from ocs_ci.helpers.helpers import check_cluster_is_compact
 from ocs_ci.ocs.resources.pv import (
     get_pv_objs_in_sc,
     get_pv_size,
@@ -1349,7 +1348,7 @@ def get_worker_nodes():
             if node.get("metadata").get("name") not in infra_node_ids
         ]
     worker_nodes_list = [node.get("metadata").get("name") for node in nodes]
-    if is_hci_provider_cluster() and not check_cluster_is_compact():
+    if is_hci_provider_cluster():
         master_node_list = get_master_nodes()
         if not (
             len(get_all_nodes()) == 3
