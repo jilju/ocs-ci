@@ -36,7 +36,6 @@ from ocs_ci.utility.utils import TimeoutSampler, convert_device_size, get_az_cou
 from ocs_ci.ocs import machine
 from ocs_ci.ocs.resources import pod
 from ocs_ci.utility.utils import set_selinux_permissions, get_ocp_version, run_cmd
-from ocs_ci.helpers.helpers import check_cluster_is_compact
 from ocs_ci.ocs.resources.pv import (
     get_pv_objs_in_sc,
     get_pv_size,
@@ -1342,6 +1341,7 @@ def get_worker_nodes(skip_master_nodes=None):
 
     """
     from ocs_ci.ocs.cluster import is_hci_provider_cluster
+    from ocs_ci.helpers.helpers import check_cluster_is_compact
 
     label = "node-role.kubernetes.io/worker"
     ocp_node_obj = ocp.OCP(kind=constants.NODE)
@@ -1362,7 +1362,9 @@ def get_worker_nodes(skip_master_nodes=None):
     should_skip_masters = skip_master_nodes
     if should_skip_masters is None:
         # Auto-detect: skip masters only for HCI provider clusters
-        should_skip_masters = is_hci_provider_cluster() and not check_cluster_is_compact()
+        should_skip_masters = (
+            is_hci_provider_cluster() and not check_cluster_is_compact()
+        )
 
     if should_skip_masters:
         master_node_list = get_master_nodes()
