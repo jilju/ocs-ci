@@ -1408,8 +1408,7 @@ def get_all_drpolicy():
     """
     return_drpolicy_list = []
     current_managed_clusters_list = []
-    config.switch_acm_ctx()
-    acm_hub_name = config.current_cluster_name()
+    acm_hub_name = config.get_cluster_name_by_index(get_active_acm_index())
     drpolicy_obj = ocp.OCP(kind=constants.DRPOLICY)
     drpolicy_list = drpolicy_obj.get(all_namespaces=True).get("items")
     for cluster_name in config.clusters:
