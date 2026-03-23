@@ -2780,7 +2780,7 @@ def validate_volumegroupsnapshot(vgs_namespace):
     namespace = config.ENV_DATA["cluster_namespace"]
     odf_external_snapshotter_pod = get_pods_having_label(
         constants.ODF_EXTERNAL_SNAPSHOTTER, namespace
-    )[0]["metadata"]["name"]
+    )
     vgs_name = get_vgs_name(vgs_namespace)
     expected_output_lst = (
         f"{vgs_name} was successfully created by the CSI driver",
@@ -2789,16 +2789,26 @@ def validate_volumegroupsnapshot(vgs_namespace):
     try:
         for expected_val in expected_output_lst:
             wait_for_matching_pattern_in_pod_logs(
-                pod_name=odf_external_snapshotter_pod,
+                pod_name=odf_external_snapshotter_pod[0]["metadata"]["name"],
                 pattern=expected_val,
                 namespace=namespace,
                 timeout=300,
                 sleep=5,
             )
     except TimeoutExpiredError:
-        raise UnexpectedBehaviour(
-            f"VolumeGroupSnapshot {vgs_name} has not been created or it is not ready."
-        )
+        if len(odf_external_snapshotter_pod) > 1:
+            for expected_val in expected_output_lst:
+                wait_for_matching_pattern_in_pod_logs(
+                    pod_name=odf_external_snapshotter_pod[1]["metadata"]["name"],
+                    pattern=expected_val,
+                    namespace=namespace,
+                    timeout=300,
+                    sleep=5,
+                )
+        else:
+            raise UnexpectedBehaviour(
+                f"VolumeGroupSnapshot {vgs_name} has not been created or it is not ready."
+            )
 
 
 def is_cg_cephfs_enabled():
