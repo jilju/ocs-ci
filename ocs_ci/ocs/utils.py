@@ -1752,10 +1752,14 @@ def get_non_acm_cluster_and_non_provider_cluster_index():
     Get config index of all non-acm and non_provider clusters
 
     Returns:
-        list: of cluster config objects
+        list: Cluster indices of all non-acm and non-provider clusters
     """
-
-    return config.get_provider_cluster_indexes()
+    all_indices = list(range(len(ocsci_config.clusters)))
+    exclude_indices = config.get_provider_cluster_indexes() + get_all_acm_indexes()
+    required_indices = [
+        index_val for index_val in all_indices if index_val not in exclude_indices
+    ]
+    return required_indices
 
 
 def get_non_acm_and_non_recovery_cluster_config():
