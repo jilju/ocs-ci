@@ -1160,7 +1160,7 @@ def wait_for_all_resources_deletion(
 
     # Bug https://redhat.atlassian.net/browse/DFBUGS-6048
     for pod_obj in all_pods:
-        if "-finalsync-" in pod_obj.name:
+        if "volsync-pvc-mount" in pod_obj.name:
             # Wait for some time for all finalsync pods to schedule
             logger.info("Wait for 90 seconds for all finalsync pods to schedule")
             sleep(90)
@@ -1168,7 +1168,7 @@ def wait_for_all_resources_deletion(
 
     for pod_obj in all_pods:
         if "volsync-rsync-tls-dst" not in pod_obj.name:
-            if "-finalsync-" in pod_obj.name:
+            if "volsync-pvc-mount" in pod_obj.name:
                 try:
                     helpers.wait_for_resource_state(
                         resource=pod_obj, state=constants.STATUS_COMPLETED, timeout=60
