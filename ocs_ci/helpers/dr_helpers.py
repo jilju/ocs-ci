@@ -9,6 +9,8 @@ import time
 from datetime import datetime
 from time import sleep
 
+from novaclient.exceptions import ResourceNotFound
+
 from ocs_ci.deployment.helpers.hypershift_base import is_hosted_cluster
 from ocs_ci.framework import config
 from ocs_ci.ocs import constants, ocp
@@ -19,6 +21,7 @@ from ocs_ci.ocs.exceptions import (
     UnexpectedBehaviour,
     NotFoundError,
     UnexpectedDeploymentConfiguration,
+    ResourceWrongStatusException,
 )
 from ocs_ci.ocs.managedservice import get_provider_service_type
 from ocs_ci.ocs.ocp import OCP
@@ -1159,16 +1162,23 @@ def wait_for_all_resources_deletion(
     for pod_obj in all_pods:
         if "-finalsync-" in pod_obj.name:
             # Wait for some time for all finalsync pods to schedule
-            logger.info("Wait for 120 seconds for all finalsync pods to schedule")
-            sleep(120)
+            logger.info("Wait for 90 seconds for all finalsync pods to schedule")
+            sleep(90)
             break
 
     for pod_obj in all_pods:
         if "volsync-rsync-tls-dst" not in pod_obj.name:
             if "-finalsync-" in pod_obj.name:
-                helpers.wait_for_resource_state(
-                    resource=pod_obj, state=constants.STATUS_COMPLETED, timeout=90
-                )
+                try:
+                    helpers.wait_for_resource_state(
+                        resource=pod_obj, state=constants.STATUS_COMPLETED, timeout=60
+                    )
+                except (ResourceWrongStatusException, CommandFailed, ResourceNotFound):
+                    # If the pod is deleted automatically
+                    pod_obj.ocp.wait_for_delete(
+                        resource_name=pod_obj.name, timeout=timeout, sleep=5
+                    )
+                    continue
                 pod_obj.delete()
             pod_obj.ocp.wait_for_delete(
                 resource_name=pod_obj.name, timeout=timeout, sleep=5
