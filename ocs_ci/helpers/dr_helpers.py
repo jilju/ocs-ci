@@ -7,6 +7,7 @@ import logging
 import tempfile
 import time
 from datetime import datetime
+from time import sleep
 
 from ocs_ci.deployment.helpers.hypershift_base import is_hosted_cluster
 from ocs_ci.framework import config
@@ -1153,8 +1154,22 @@ def wait_for_all_resources_deletion(
     """
     logger.info("Waiting for all pods to be deleted")
     all_pods = get_all_pods(namespace=namespace)
+
+    # Bug https://redhat.atlassian.net/browse/DFBUGS-6048
+    for pod_obj in all_pods:
+        if "-finalsync-" in pod_obj.name:
+            # Wait for some time for all finalsync pods to schedule
+            logger.info("Wait for 600 seconds for all finalsync pods to schedule")
+            sleep(600)
+            break
+
     for pod_obj in all_pods:
         if "volsync-rsync-tls-dst" not in pod_obj.name:
+            if "-finalsync-" in pod_obj.name:
+                helpers.wait_for_resource_state(
+                    resource=pod_obj, state=constants.STATUS_COMPLETED, timeout=90
+                )
+                pod_obj.delete()
             pod_obj.ocp.wait_for_delete(
                 resource_name=pod_obj.name, timeout=timeout, sleep=5
             )
