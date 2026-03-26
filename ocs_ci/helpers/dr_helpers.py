@@ -1159,8 +1159,8 @@ def wait_for_all_resources_deletion(
     for pod_obj in all_pods:
         if "-finalsync-" in pod_obj.name:
             # Wait for some time for all finalsync pods to schedule
-            logger.info("Wait for 600 seconds for all finalsync pods to schedule")
-            sleep(600)
+            logger.info("Wait for 120 seconds for all finalsync pods to schedule")
+            sleep(120)
             break
 
     for pod_obj in all_pods:
