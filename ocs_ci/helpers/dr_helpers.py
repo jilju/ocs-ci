@@ -1434,8 +1434,9 @@ def get_all_drpolicy():
     return_drpolicy_list = []
     current_managed_clusters_list = []
     acm_hub_name = config.get_cluster_name_by_index(get_active_acm_index())
-    drpolicy_obj = ocp.OCP(kind=constants.DRPOLICY)
-    drpolicy_list = drpolicy_obj.get(all_namespaces=True).get("items")
+    with config.RunWithAcmConfigContext():
+        drpolicy_obj = ocp.OCP(kind=constants.DRPOLICY)
+        drpolicy_list = drpolicy_obj.get(all_namespaces=True).get("items")
     for cluster_name in config.clusters:
         if cluster_name.ENV_DATA.get("rbd_dr_scenario"):
             current_managed_clusters_list.append(
