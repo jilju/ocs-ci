@@ -2108,7 +2108,9 @@ RACK_LABEL = "topology.rook.io/rack"
 
 # Cluster name limits
 CLUSTER_NAME_MIN_CHARACTERS = 5
-CLUSTER_NAME_MAX_CHARACTERS = 17
+# CLUSTER_NAME_MAX_CHARACTERS = 17
+# Temporary change
+CLUSTER_NAME_MAX_CHARACTERS = 20
 
 STAGE_CA_FILE = os.path.join(TEMPLATE_DIR, "ocp-deployment", "stage-ca.crt")
 
