@@ -2276,7 +2276,7 @@ def get_odf_external_snapshotter_leader(namespace=None):
     for pod in odf_snapshotter_pods:
         pods_log[pod] = get_pod_logs(
             pod_name=pod.name,
-            container="odf-external-snapshotter",
+            container="odf-external-snapshotter-operator",
             namespace=namespace,
         ).split("\n")
 
