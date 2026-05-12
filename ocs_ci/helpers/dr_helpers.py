@@ -415,8 +415,8 @@ def check_mirroring_status_ok(
         if not cephbpradosns:
             raise NotFoundError("Couldn't identify the cephblockpoolradosnamespace")
 
-        if "ocs-storagecluster-cephblockpool" not in cephbpradosns:
-            cephbpradosns = "ocs-storagecluster-cephblockpool-" + cephbpradosns
+        # if "ocs-storagecluster-cephblockpool" not in cephbpradosns:
+        #     cephbpradosns = "ocs-storagecluster-cephblockpool-" + cephbpradosns
 
         logger.info(f"Got cephblockpoolradosnamespace {cephbpradosns}")
 
