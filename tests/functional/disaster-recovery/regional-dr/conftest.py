@@ -3,6 +3,7 @@ import pytest
 import time
 
 from ocs_ci.framework import config
+from ocs_ci.helpers.virtctl import get_virtctl_tool
 from ocs_ci.ocs import constants
 from ocs_ci.deployment import acm
 from ocs_ci.ocs.resources.storage_cluster import get_all_storageclass
@@ -42,6 +43,11 @@ def check_subctl_cli():
         log.debug("subctl binary not found, downloading now...")
         submariner = acm.Submariner()
         submariner.download_binary()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def get_virtctl():
+    get_virtctl_tool()
 
 
 @pytest.fixture()
