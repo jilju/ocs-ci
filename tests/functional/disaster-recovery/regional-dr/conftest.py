@@ -47,7 +47,8 @@ def check_subctl_cli():
 
 @pytest.fixture(scope="session", autouse=True)
 def get_virtctl():
-    get_virtctl_tool()
+    with config.RunWithProviderConfigContextIfAvailable():
+        get_virtctl_tool()
 
 
 @pytest.fixture()
