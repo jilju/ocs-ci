@@ -1959,7 +1959,7 @@ validation = {
         By.CSS_SELECTOR,
     ),
     "input_value_validator_icon": (
-        "//button[@aria-label='Validation']/child::*[contains(@class, 'c-icon')]",
+        "//button[@aria-label='Validation']",
         By.XPATH,
     ),
     "input_validation_popup_container": (
@@ -2561,7 +2561,7 @@ topology = {
         By.XPATH,
     ),
     "close_sidebar": ("//button[@aria-label='Close']//*[name()='svg']", By.XPATH),
-    "back_btn": ("//div[@class='odf-topology__back-button']", By.XPATH),
+    "back_btn": ("//button[contains(@class, 'odf-topology__back-button')]", By.XPATH),
     "alerts_sidebar_tab": ("//span[normalize-space()='Alerts']", By.XPATH),
     "number_of_alerts": (
         "//span[normalize-space()='{}']/preceding-sibling::*//*[@data-test='status-text']",

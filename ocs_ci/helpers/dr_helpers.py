@@ -65,6 +65,7 @@ from ocs_ci.helpers.helpers import (
     find_cephblockpoolradosnamespace,
     find_cephfilesystemsubvolumegroup,
     create_unique_resource_name,
+    find_radosnamespace,
 )
 from ocs_ci.helpers import helpers
 
@@ -384,6 +385,46 @@ def relocate(
     config.switch_ctx(restore_index)
 
 
+def check_rbd_mirror_running(namespace=None):
+    """
+    Check if the rbd-mirror daemon deployment is running with at least one ready replica.
+    Ceph HEALTH_OK does not reflect rbd-mirror daemon absence, so this explicit
+    check is needed to catch silent failures before tests run.
+
+    Args:
+        namespace (str): Namespace to check in.
+            Defaults to config.ENV_DATA['cluster_namespace'].
+
+    Returns:
+        bool: True if rbd-mirror deployment has ready replicas
+
+    Raises:
+        UnexpectedDeploymentConfiguration: If the rbd-mirror deployment is
+            not found or not running
+
+    """
+    namespace = namespace or config.ENV_DATA["cluster_namespace"]
+    dep_ocp = OCP(kind=constants.DEPLOYMENT, namespace=namespace)
+    try:
+        dep_data = dep_ocp.get(resource_name=constants.RBD_MIRROR_DAEMON_DEPLOYMENT)
+    except CommandFailed:
+        raise UnexpectedDeploymentConfiguration(
+            f"{constants.RBD_MIRROR_DAEMON_DEPLOYMENT} deployment not found in {namespace}"
+        )
+    spec_replicas = dep_data.get("spec", {}).get("replicas") or 0
+    ready_replicas = dep_data.get("status", {}).get("readyReplicas") or 0
+    if spec_replicas < 1 or ready_replicas < 1:
+        raise UnexpectedDeploymentConfiguration(
+            f"{constants.RBD_MIRROR_DAEMON_DEPLOYMENT} is not running: "
+            f"spec.replicas={spec_replicas}, status.readyReplicas={ready_replicas}"
+        )
+    logger.info(
+        f"{constants.RBD_MIRROR_DAEMON_DEPLOYMENT} is running: "
+        f"replicas={spec_replicas}, readyReplicas={ready_replicas}"
+    )
+    return True
+
+
 def check_mirroring_status_ok(
     replaying_images=None,
     replaying_groups=None,
@@ -420,8 +461,20 @@ def check_mirroring_status_ok(
         if not cephbpradosns:
             raise NotFoundError("Couldn't identify the cephblockpoolradosnamespace")
 
-        if "ocs-storagecluster-cephblockpool" not in cephbpradosns:
-            cephbpradosns = "ocs-storagecluster-cephblockpool-" + cephbpradosns
+        if (
+            "ocs-storagecluster-cephblockpool" not in cephbpradosns
+            and "replicated-metadata-pool" not in cephbpradosns
+        ):
+            cephblockpool_rns_names = [
+                cephbprns_data["metadata"]["name"]
+                for cephbprns_data in ocp.OCP(
+                    kind=constants.CEPHBLOCKPOOLRADOSNS,
+                    namespace=config.ENV_DATA["cluster_namespace"],
+                ).get()["items"]
+            ]
+            cephbpradosns = list(
+                filter(lambda x: f"-{cephbpradosns}" in x, cephblockpool_rns_names)
+            )[0]
 
         logger.info(f"Got cephblockpoolradosnamespace {cephbpradosns}")
 
@@ -434,7 +487,17 @@ def check_mirroring_status_ok(
         )
     else:
         if ocs_version >= version.VERSION_4_19:
-            cephbpradosns = "ocs-storagecluster-cephblockpool-builtin-implicit"
+            # The name of builtin-implicit cephblockpoolradosnamespace is different in EC cluster and non EC cluster
+            cephblockpool_rns_names = [
+                cephbprns_data["metadata"]["name"]
+                for cephbprns_data in ocp.OCP(
+                    kind=constants.CEPHBLOCKPOOLRADOSNS,
+                    namespace=config.ENV_DATA["cluster_namespace"],
+                ).get()["items"]
+            ]
+            cephbpradosns = list(
+                filter(lambda x: "-builtin-implicit" in x, cephblockpool_rns_names)
+            )[0]
             cbp_obj = ocp.OCP(
                 kind=constants.CEPHBLOCKPOOLRADOSNS,
                 namespace=config.ENV_DATA["cluster_namespace"],
@@ -1378,7 +1441,7 @@ def verify_backend_volume_deletion(
         cephbpradosns = (
             cephblockpoolradosns
             or config.ENV_DATA.get("radosnamespace_name", None)
-            or find_cephblockpoolradosnamespace(storageclient_uid=storageclient_uid)
+            or find_radosnamespace(storageclient_uid=storageclient_uid)
         )
 
         if not cephbpradosns:
