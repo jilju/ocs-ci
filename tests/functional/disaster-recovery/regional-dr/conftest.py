@@ -270,7 +270,7 @@ def mirror_rdr_images():
         log.warning("No RDR images found to mirror. Exiting function.")
         return
     for index, image_url in enumerate(rdr_images):
-        rdr_images[index] = f"name: {image_url}"
+        rdr_images[index] = {"name", image_url}
     imageset_config_data["mirror"]["additionalImages"] = rdr_images
     log.info(f"Added {len(rdr_images)} RDR images to mirror configuration")
 
