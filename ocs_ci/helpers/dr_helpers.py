@@ -3295,8 +3295,9 @@ def generate_rdr_mirror_images():
                 logger.info("Images ready for mirroring in disconnected environment")
             else:
                 logger.warning("No container images found in YAML files")
-            # for index, image_url in enumerate(image_list):
-            #     image_list[index] = image_url[image_url.index("quay") :]
+            # Temporary fix
+            for index, image_url in enumerate(image_list):
+                image_list[index] = image_url[image_url.index("quay.io") :]
             logger.info(image_list)
             return image_list
         else:
