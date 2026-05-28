@@ -269,6 +269,8 @@ def mirror_rdr_images():
     if not rdr_images:
         log.warning("No RDR images found to mirror. Exiting function.")
         return
+    # Temporary - get rdr-ocs-workload images only
+    rdr_images = [image for image in rdr_images if "rdr-ocs-workload" in image]
     for index, image_url in enumerate(rdr_images):
         rdr_images[index] = {"name": image_url}
     imageset_config_data["mirror"]["additionalImages"] = rdr_images
