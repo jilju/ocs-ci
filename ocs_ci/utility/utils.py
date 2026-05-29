@@ -3484,6 +3484,9 @@ def ceph_health_check_base(
     if health.strip().startswith("HEALTH_OK"):
         if health.strip() != "HEALTH_OK":
             log.warning(f"Ceph cluster health: {health}")
+            if health == "HEALTH_WARN":
+                log.warning("MDS crash is expected in this cluster. Ignoring")
+                return True
         else:
             log.info("Ceph cluster health is HEALTH_OK.")
         return True
