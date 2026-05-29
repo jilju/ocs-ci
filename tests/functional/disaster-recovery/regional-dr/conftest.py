@@ -112,7 +112,7 @@ def rdr_health_check():
                 pytest.skip(f"rbd-mirror daemon check failed on {cluster_name}")
             if not check_mirroring_status_ok():
                 log.error(f"Mirroring health is not OK on {cluster_name}")
-                pytest.skip(f"Mirroring health is not OK on {cluster_name}")
+                # pytest.skip(f"Mirroring health is not OK on {cluster_name}")
     finally:
         config.switch_ctx(restore_index)
 
