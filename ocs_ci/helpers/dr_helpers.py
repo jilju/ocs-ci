@@ -3240,6 +3240,7 @@ def validate_protection_label(kind, namespace, protection_name=None):
     )
 
 
+<<<<<<< HEAD
 def generate_rdr_mirror_images():
     """
     Extract and return list of container images from RDR workload repository.
