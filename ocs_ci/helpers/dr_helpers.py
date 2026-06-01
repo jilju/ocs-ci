@@ -538,7 +538,7 @@ def check_mirroring_status_ok(
             return False
 
     if replaying_images:
-        current_replying_images_in_cluster = 20
+        current_replying_images_in_cluster = 30
         replaying_images = replaying_images + current_replying_images_in_cluster
         # Replaying images count can be higher due to presence of dummy images
         # This does not apply for clusters with ODF 4.12 and above.
