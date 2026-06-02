@@ -1276,9 +1276,15 @@ def _collect_ocs_logs(
         )
         ocs_must_gather_image_and_tag = f"{ocs_must_gather_image}:{latest_tag}"
         if cluster_config.DEPLOYMENT.get("disconnected"):
-            ocs_must_gather_image_and_tag = mirror_image(
-                ocs_must_gather_image_and_tag, cluster_config
-            )
+            # TODO: In config, add the image tag available in the mirror repo. Improve to identify the image based
+            #  on version
+            if (
+                cluster_config.ENV_DATA.get("platform").lower()
+                != constants.HCI_BAREMETAL
+            ):
+                ocs_must_gather_image_and_tag = mirror_image(
+                    ocs_must_gather_image_and_tag, cluster_config
+                )
         mg_output = run_must_gather(
             ocs_log_dir_path,
             ocs_must_gather_image_and_tag,
