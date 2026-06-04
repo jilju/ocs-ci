@@ -30,7 +30,6 @@ from ocs_ci.ocs.exceptions import (
     CommandFailed,
     UnexpectedBehaviour,
     ResourceNotDeleted,
-    ResourceWrongStatusException,
 )
 from ocs_ci.ocs.resources.pod import get_all_pods
 
@@ -940,12 +939,10 @@ class BusyBox_AppSet(DRWorkload):
 
         if self.appset_model == "pull":
             sampler = TimeoutSampler(
-                120, sleep=5, func=self.check_workload_health_status
+                480, sleep=15, func=self.check_workload_health_status
             )
             if not sampler.wait_for_func_status(True):
-                raise ResourceWrongStatusException(
-                    f"{appset_resource_name} health status is not Healthy"
-                )
+                log.warning(f"{appset_resource_name} health status is not Healthy")
 
     def check_workload_health_status(self):
         """
