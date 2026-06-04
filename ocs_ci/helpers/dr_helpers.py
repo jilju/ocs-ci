@@ -460,6 +460,8 @@ def check_mirroring_status_ok(
         NotFoundError: If the configuration is provider mode and the name of the cephblockpoolradosnamespace
             is not obtained
     """
+    replaying_images_before_test = 40
+    replaying_groups_before_test = 4
     ocs_version = version.get_semantic_ocs_version_from_config()
     if is_hci_cluster():
         logger.info("Get the cephblockpoolradosnamespace associated with storageclient")
@@ -538,6 +540,7 @@ def check_mirroring_status_ok(
             return False
 
     if replaying_images:
+        replaying_images = replaying_images + replaying_images_before_test
         # Replaying images count can be higher due to presence of dummy images
         # This does not apply for clusters with ODF 4.12 and above.
         # See https://bugzilla.redhat.com/show_bug.cgi?id=2132359
@@ -568,6 +571,7 @@ def check_mirroring_status_ok(
 
     if is_cg_enabled():
         if replaying_groups is not None:
+            replaying_groups = replaying_groups + replaying_groups_before_test
             current_replaying_groups = mirroring_status.get("group_states", {}).get(
                 "replaying"
             )
