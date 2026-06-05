@@ -67,13 +67,13 @@ class TestSiteFailureRecoveryAndFailover:
 
         # Deploy Subscription and Appset based application of both RBD and CephFS SC
         rdr_workload = dr_workload(
-            num_of_subscription=0,
+            num_of_subscription=1,
             num_of_appset=1,
             pvc_interface=constants.CEPHBLOCKPOOL,
             switch_ctx=get_passive_acm_index(),
         )
         dr_workload(
-            num_of_subscription=0,
+            num_of_subscription=1,
             num_of_appset=1,
             pvc_interface=constants.CEPHFILESYSTEM,
             switch_ctx=get_passive_acm_index(),
