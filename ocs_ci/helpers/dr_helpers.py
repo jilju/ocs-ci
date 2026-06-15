@@ -2899,22 +2899,49 @@ def create_service_exporter(annotate=True):
         else:
             logger.info("Skipping multiClusterService creation for multiclient cluster")
         logger.info("Creating Service exporter")
-        run_cmd(f"oc create -f {constants.DR_SERVICE_EXPORTER}")
+        run_cmd(f"oc apply -f {constants.DR_SERVICE_EXPORTER}")
 
         if annotate:
             cluster_type = cluster.ENV_DATA.get("cluster_type", "").lower()
-            if (
-                config.ENV_DATA.get("odf_provider_mode_deployment")
+            service_type = get_provider_service_type()
+            odf_provider_mode = config.ENV_DATA.get("odf_provider_mode_deployment")
+
+            logger.info(
+                f"Determining cluster address configuration: "
+                f"service_type={service_type}, cluster_type={cluster_type}, "
+                f"odf_provider_mode={odf_provider_mode}"
+            )
+
+            # Check service type first - ClusterIP always uses cluster service
+            if service_type == "ClusterIP":
+                logger.info(
+                    "Using ClusterIP configuration: cluster service with port 50051"
+                )
+                cluster_address = config.ENV_DATA["cluster_name"]
+                cluster_address_port = "50051"
+                cluster_service_export_provider_server = (
+                    ".ocs-provider-server.openshift-storage.svc.clusterset.local"
+                )
+            elif (
+                odf_provider_mode
                 or cluster_type == constants.HCI_PROVIDER
-                or get_provider_service_type() == "NodePort"
+                or service_type == "NodePort"
             ):
+                logger.info(
+                    f"Using NodePort/Provider configuration: node IP with port 31659 "
+                    f"(odf_provider_mode={odf_provider_mode}, "
+                    f"cluster_type={cluster_type}, service_type={service_type})"
+                )
                 cluster_address = get_node_internal_ip(
                     get_node_objs(get_worker_nodes()[0])[0]
                 )
                 cluster_address_port = "31659"
                 cluster_service_export_provider_server = ""
-
             else:
+                logger.info(
+                    f"Using default configuration: cluster service with port 50051 "
+                    f"(service_type={service_type})"
+                )
                 cluster_address = config.ENV_DATA["cluster_name"]
                 cluster_address_port = "50051"
                 cluster_service_export_provider_server = (
@@ -2924,7 +2951,7 @@ def create_service_exporter(annotate=True):
             run_cmd(
                 "oc annotate storagecluster ocs-storagecluster -n openshift-storage"
                 f" ocs.openshift.io/api-server-exported-address={cluster_address}"
-                f"{cluster_service_export_provider_server}:{cluster_address_port}"
+                f"{cluster_service_export_provider_server}:{cluster_address_port} --overwrite"
             )
     config.switch_ctx(restore_index)
 
