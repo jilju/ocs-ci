@@ -2286,6 +2286,7 @@ def get_odf_external_snapshotter_leader(namespace=None):
     non_leader_msg = "Failed to acquire lease"
     lease_acq_msg = "Successfully acquired lease"
     lease_renew_msg = "Successfully renewed lease"
+    lease_renew_msg2 = "successfully renewed lease"
     leader_pod = ""
 
     # Get all ODF external snapshotter pods
@@ -2305,7 +2306,11 @@ def get_odf_external_snapshotter_leader(namespace=None):
         for log_msg in log_list:
             # Check for last occurrence of leader message
             # This will be the first occurrence in reversed list.
-            if (lease_renew_msg in log_msg) or (lease_acq_msg in log_msg):
+            if (
+                (lease_renew_msg in log_msg)
+                or (lease_acq_msg in log_msg)
+                or (lease_renew_msg2 in log_msg)
+            ):
                 curr_index = log_list.index(log_msg)
                 # Ensure that there is no non leader message logged after
                 # the last occurrence of leader message
