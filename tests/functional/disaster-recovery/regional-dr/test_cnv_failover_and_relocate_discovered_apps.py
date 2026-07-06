@@ -235,7 +235,9 @@ class TestCNVFailoverAndRelocateWithDiscoveredApps:
         nodes_multicluster[active_primary_index].start_nodes(
             active_primary_cluster_node_objs
         )
-        wait_for_nodes_status([node.name for node in active_primary_cluster_node_objs])
+        wait_for_nodes_status(
+            [node.name for node in active_primary_cluster_node_objs], timeout=600
+        )
         wait_for_pods_to_be_running(timeout=420, sleep=15)
         assert ceph_health_check(tries=10, delay=30)
 
