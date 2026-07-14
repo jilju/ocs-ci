@@ -46,6 +46,11 @@ def test_acm_import():
                     logger.error(
                         f"Error applying IDMS on cluster index {cluster.MULTICLUSTER['multicluster_index']}: {e}"
                     )
+            else:
+                logger.info(
+                    f"Skipping IDMS application for disconnected cluster index "
+                    f"{cluster.MULTICLUSTER['multicluster_index']}"
+                )
 
         # Step 2: Wait for MCP update on all clusters
         for cluster in config.clusters:
