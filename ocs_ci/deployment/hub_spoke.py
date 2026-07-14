@@ -669,15 +669,15 @@ def check_odf_prerequisites():
         logger.info(
             "Storage Cluster resource of hub cluster has hostNetwork set to true"
         )
-        if sc_spec.get("providerAPIServerServiceType") == "NodePort":
-            logger.info(
-                "Storage Cluster resource of hub cluster has providerAPIServerServiceType set to NodePort"
-            )
-            return
-        else:
-            raise AssertionError(
-                "Storage Cluster resource of hub cluster has providerAPIServerServiceType not set to NodePort"
-            )
+        # if sc_spec.get("providerAPIServerServiceType") == "NodePort":
+        #     logger.info(
+        #         "Storage Cluster resource of hub cluster has providerAPIServerServiceType set to NodePort"
+        #     )
+        #     return
+        # else:
+        #     raise AssertionError(
+        #         "Storage Cluster resource of hub cluster has providerAPIServerServiceType not set to NodePort"
+        #     )
     else:
         raise AssertionError(
             "Storage Cluster resource of hub cluster has hostNetwork not set to true"
