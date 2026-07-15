@@ -2,6 +2,8 @@ import logging
 import platform
 import os
 import tempfile
+
+from ocs_ci.ocs.cluster import get_ec_metadata_pool_name
 from ocs_ci.utility import templating
 import pytest
 
@@ -230,10 +232,13 @@ def cnv_custom_storage_class(
         log.test_step(
             "Wait for CephBlockPoolRadosNamespace to reach Ready" " on both clusters"
         )
-        radosns_name = f"{pool_name}-builtin-implicit"
         for cluster in get_non_acm_cluster_config():
             config.switch_ctx(cluster.MULTICLUSTER["multicluster_index"])
             cluster_name = config.ENV_DATA.get("cluster_name")
+            if erasure_coded:
+                radosns_name = f"{get_ec_metadata_pool_name()}-builtin-implicit"
+            else:
+                radosns_name = f"{pool_name}-builtin-implicit"
             existing_sc_list = get_all_storageclass()
             if sc_name in existing_sc_list:
                 continue
