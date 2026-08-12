@@ -98,7 +98,7 @@ class TestFailoverAndRelocate:
     )
     def test_failover_and_relocate(
         self,
-        setup_acm_ui,
+        # TODO: setup_acm_ui,
         primary_cluster_down,
         pvc_interface,
         nodes_multicluster,
